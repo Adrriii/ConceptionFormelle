@@ -1,0 +1,45 @@
+const nbFloors : integer = 4;
+
+node Button
+    state
+        lit : bool;
+    init
+        lit := false;
+    event
+        push; 
+        off;
+    trans
+        true |- push -> lit := true;
+        true |- off -> lit := false;
+edon
+
+node Door
+    state
+        opened : bool;
+    init
+        opened := false;
+    event
+        open; 
+        close;
+    trans
+        true |- open -> opened := true;
+        true |- close -> opened := false;
+edon
+
+node Lift
+    sub
+        door : Door;
+        buttons : Button[nbFloors];
+edon
+
+node Floor
+    sub
+        button : Button;
+        door : Door;
+edon
+
+node Building
+    sub
+        floors : Floor[nbFloors];
+        lift : Lift;
+edon
