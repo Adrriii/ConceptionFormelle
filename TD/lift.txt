@@ -75,11 +75,21 @@ node Building
         lift : Lift;
     event 
         open[nbFloors];
+        up;
+        down;
     trans
         lift.currentFloor=0 & (floors[0].button.lit | lift.buttons[0].lit) |- open[0] -> ;
         lift.currentFloor=1 & (floors[1].button.lit | lift.buttons[1].lit) |- open[1] -> ;
         lift.currentFloor=2 & (floors[2].button.lit | lift.buttons[2].lit) |- open[2] -> ;
         lift.currentFloor=3 & (floors[3].button.lit | lift.buttons[3].lit) |- open[3] -> ;
+        (lift.currentFloor < 3 & (floors[3].button.lit | lift.buttons[3].lit)) 
+        | (lift.currentFloor < 2 & (floors[2].button.lit | lift.buttons[3].lit))
+        | (lift.currentFloor < 1 & (floors[1].button.lit | lift.buttons[1].lit))
+        | (lift.currentFloor = 0 & (floors[0].button.lit | lift.buttons[0].lit)) |- up -> ; // Vérifier qu'un boutton est allumé plus haut
+        (lift.currentFloor = 3 & (floors[3].button.lit | lift.buttons[3].lit))
+        | (lift.currentFloor > 2 & (floors[2].button.lit | lift.buttons[3].lit))
+        | (lift.currentFloor > 1 & (floors[1].button.lit | lift.buttons[1].lit))
+        | (lift.currentFloor > 0 & (floors[0].button.lit | lift.buttons[0].lit)) |- down -> ; // Vérifier qu'un boutton est allumé plus haut
     sync
         <floors[0].open, lift.open, open[0]>;
         <floors[1].open, lift.open, open[1]>;
@@ -89,4 +99,6 @@ node Building
         <floors[1].close, lift.close[1]>;
         <floors[2].close, lift.close[2]>;
         <floors[3].close, lift.close[3]>;
+        <down, lift.down>;
+        <up, lift.up>;
 edon
