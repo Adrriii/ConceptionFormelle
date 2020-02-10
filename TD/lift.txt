@@ -2,11 +2,11 @@ const nbFloors : integer = 4;
 
 node Button
     state
-        lit : bool;
+        lit : bool : public;
     init
         lit := false;
     event
-        push; 
+        push: public; // Empêche de démultiplier les possibilités à la racine
         off;
     trans
         true |- push -> lit := true;
@@ -31,7 +31,7 @@ node Lift
         door : Door;
         buttons : Button[nbFloors];
     state    
-        currentFloor : [0,nbFloors-1];
+        currentFloor : [0,nbFloors-1] : public;
     init
         currentFloor := 0;
     event
@@ -73,4 +73,20 @@ node Building
     sub
         floors : Floor[nbFloors];
         lift : Lift;
+    event 
+        open[nbFloors];
+    trans
+        lift.currentFloor=0 & (floors[0].button.lit | lift.buttons[0].lit) |- open[0] -> ;
+        lift.currentFloor=1 & (floors[1].button.lit | lift.buttons[1].lit) |- open[1] -> ;
+        lift.currentFloor=2 & (floors[2].button.lit | lift.buttons[2].lit) |- open[2] -> ;
+        lift.currentFloor=3 & (floors[3].button.lit | lift.buttons[3].lit) |- open[3] -> ;
+    sync
+        <floors[0].open, lift.open, open[0]>;
+        <floors[1].open, lift.open, open[1]>;
+        <floors[2].open, lift.open, open[2]>;
+        <floors[3].open, lift.open, open[3]>;
+        <floors[0].close, lift.close[0]>;
+        <floors[1].close, lift.close[1]>;
+        <floors[2].close, lift.close[2]>;
+        <floors[3].close, lift.close[3]>;
 edon
