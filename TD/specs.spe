@@ -1,0 +1,5 @@
+with Building do
+    // Propriétés universelles
+    dead := any_s - src(any_t - self_epsilon);
+    notResettable := any_s - coreach(initial, any_t);
+done
