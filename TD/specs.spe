@@ -35,4 +35,13 @@ with Building do
                 (tgt(label floors[1].door.close) - [~lift.buttons[1].lit] - [~floors[1].button.lit])|
                 (tgt(label floors[2].door.close) - [~lift.buttons[2].lit] - [~floors[2].button.lit])|
                 (tgt(label floors[3].door.close) - [~lift.buttons[3].lit] - [~floors[3].button.lit]);
+
+    /* P3 : On each floor, the door must remain closed if the lift is not there.
+     * P3 : if "lift not at this floor" then "floor door is closed"
+     */
+     notP3 := any_s & 
+            (([~(lift.currentFloor=0)] - [~floors[0].door.opened])|
+                ([~(lift.currentFloor=1)] - [~floors[1].door.opened])|
+                ([~(lift.currentFloor=2)] - [~floors[2].door.opened])|
+                ([~(lift.currentFloor=3)] - [~floors[3].door.opened]));
 done
