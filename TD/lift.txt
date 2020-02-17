@@ -99,9 +99,9 @@ node Building
         lift.currentFloor=2 & request[2] |- open[2] -> ;
         lift.currentFloor=3 & request[3] |- open[3] -> ;
 
-        ~lift.door.opened & requestUp |- up -> ; 
+        requestUp |- up -> ; 
 
-        ~lift.door.opened & requestDown |- down -> ; 
+        requestDown |- down -> ; 
     sync
         <floors[0].open, lift.open, open[0]>;
         <floors[1].open, lift.open, open[1]>;
