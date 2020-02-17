@@ -45,4 +45,17 @@ with Building do
                 ([~(lift.currentFloor=1)] - [~floors[1].door.opened])|
                 ([~(lift.currentFloor=2)] - [~floors[2].door.opened])|
                 ([~(lift.currentFloor=3)] - [~floors[3].door.opened]));
+
+    /* P5 : The software opens the door at some floor only if there is some requests for that floor.
+     * P5 : if "floor door opens" then "floor request is true"
+     */
+     notP5 := (src(label floors[0].door.open) - [request[0]])|
+                (src(label floors[1].door.open) - [request[1]])|
+                (src(label floors[2].door.open) - [request[2]])|
+                (src(label floors[3].door.open) - [request[3]]);       // src : configurations before a transition
+
+    /* P6 : If there is no request, the lift must stay at the same floor
+     * P6 : if "all requests are false" then "up and down not possible"
+     */
+     notP6 := any_s & (src(label up) - src(label down) - [request[0] |request[1] |request[2] |request[3]]);
 done
