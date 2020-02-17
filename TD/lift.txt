@@ -73,23 +73,37 @@ node Building
     sub
         floors : Floor[nbFloors];
         lift : Lift;
+    flow 
+        request : bool[nbFloors] : private;
+        requestUp, requestDown : bool : private;
+    assert
+        request[0] = (floors[0].button.lit | lift.buttons[0].lit);
+        request[1] = (floors[1].button.lit | lift.buttons[1].lit);
+        request[2] = (floors[2].button.lit | lift.buttons[2].lit);
+        request[3] = (floors[3].button.lit | lift.buttons[3].lit);
+
+        requestUp = ((lift.currentFloor < 3 & request[3]) 
+        | (lift.currentFloor < 2 & request[2])
+        | (lift.currentFloor < 1 & request[1])
+        | (lift.currentFloor = 0 & request[0])); // Vérifier qu'un boutton est allumé plus haut
+
+        requestDown = ((lift.currentFloor = 3 & request[3])
+        | (lift.currentFloor > 2 & request[2])
+        | (lift.currentFloor > 1 & request[1])
+        | (lift.currentFloor > 0 & request[0])); // Vérifier qu'un boutton est allumé plus bas
     event 
         open[nbFloors];
         up;
         down;
     trans
-        lift.currentFloor=0 & (floors[0].button.lit | lift.buttons[0].lit) |- open[0] -> ;
-        lift.currentFloor=1 & (floors[1].button.lit | lift.buttons[1].lit) |- open[1] -> ;
-        lift.currentFloor=2 & (floors[2].button.lit | lift.buttons[2].lit) |- open[2] -> ;
-        lift.currentFloor=3 & (floors[3].button.lit | lift.buttons[3].lit) |- open[3] -> ;
-        (lift.currentFloor < 3 & (floors[3].button.lit | lift.buttons[3].lit)) 
-        | (lift.currentFloor < 2 & (floors[2].button.lit | lift.buttons[3].lit))
-        | (lift.currentFloor < 1 & (floors[1].button.lit | lift.buttons[1].lit))
-        | (lift.currentFloor = 0 & (floors[0].button.lit | lift.buttons[0].lit)) |- up -> ; // Vérifier qu'un boutton est allumé plus haut
-        (lift.currentFloor = 3 & (floors[3].button.lit | lift.buttons[3].lit))
-        | (lift.currentFloor > 2 & (floors[2].button.lit | lift.buttons[3].lit))
-        | (lift.currentFloor > 1 & (floors[1].button.lit | lift.buttons[1].lit))
-        | (lift.currentFloor > 0 & (floors[0].button.lit | lift.buttons[0].lit)) |- down -> ; // Vérifier qu'un boutton est allumé plus haut
+        lift.currentFloor=0 & request[0] |- open[0] -> ;
+        lift.currentFloor=1 & request[1] |- open[1] -> ;
+        lift.currentFloor=2 & request[2] |- open[2] -> ;
+        lift.currentFloor=3 & request[3] |- open[3] -> ;
+
+        ~lift.door.opened & requestUp |- up -> ; 
+
+        ~lift.door.opened & requestDown |- down -> ; 
     sync
         <floors[0].open, lift.open, open[0]>;
         <floors[1].open, lift.open, open[1]>;
