@@ -26,5 +26,13 @@ with Building do
               (tgt(label lift.buttons[0].push) - [lift.buttons[0].lit])|
                 (tgt(label lift.buttons[1].push) - [lift.buttons[1].lit])|
                 (tgt(label lift.buttons[2].push) - [lift.buttons[2].lit])|
-                (tgt(label lift.buttons[3].push) - [lift.buttons[3].lit]);  
+                (tgt(label lift.buttons[3].push) - [lift.buttons[3].lit]); 
+
+    /* P2 : When the corresponding service is done, it lights off.
+     * P2 : if "doot is closed" then "buttons light off"
+     */ 
+     notP2 := (tgt(label floors[0].door.close) - [~lift.buttons[0].lit] - [~floors[0].button.lit])|
+                (tgt(label floors[1].door.close) - [~lift.buttons[1].lit] - [~floors[1].button.lit])|
+                (tgt(label floors[2].door.close) - [~lift.buttons[2].lit] - [~floors[2].button.lit])|
+                (tgt(label floors[3].door.close) - [~lift.buttons[3].lit] - [~floors[3].button.lit]);
 done
