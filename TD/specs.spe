@@ -38,6 +38,7 @@ with Building do
 
     /* P3 : On each floor, the door must remain closed if the lift is not there.
      * P3 : if "lift not at this floor" then "floor door is closed"
+     * Intersection with any_s : changing intial state might change the result !
      */
      notP3 := any_s & 
             (([~(lift.currentFloor=0)] - [~floors[0].door.opened])|
