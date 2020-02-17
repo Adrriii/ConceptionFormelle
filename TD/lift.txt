@@ -84,11 +84,9 @@ node Building
 
         requestUp = ((lift.currentFloor < 3 & request[3]) 
         | (lift.currentFloor < 2 & request[2])
-        | (lift.currentFloor < 1 & request[1])
-        | (lift.currentFloor = 0 & request[0])); // Vérifier qu'un boutton est allumé plus haut
+        | (lift.currentFloor < 1 & request[1])); // Vérifier qu'un boutton est allumé plus haut
 
-        requestDown = ((lift.currentFloor = 3 & request[3])
-        | (lift.currentFloor > 2 & request[2])
+        requestDown = ((lift.currentFloor > 2 & request[2])
         | (lift.currentFloor > 1 & request[1])
         | (lift.currentFloor > 0 & request[0])); // Vérifier qu'un boutton est allumé plus bas
     event 
