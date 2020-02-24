@@ -1,0 +1,122 @@
+const nbFloors : integer = 4;
+
+node Button
+    state
+        lit : bool : public;
+    init
+        lit := false;
+    event
+        push: public; // Empêche de démultiplier les possibilités à la racine
+        off;
+    trans
+        true |- push -> lit := true;
+        true |- off -> lit := false;
+edon
+
+node Door
+    state
+        opened : bool : public;
+    init
+        opened := false;
+    event
+        open; 
+        close;
+    trans
+        true |- open -> opened := true;
+        true |- close -> opened := false;
+edon
+
+node Lift
+    sub
+        door : Door;
+        buttons : Button[nbFloors];
+    state    
+        currentFloor : [0,nbFloors-1] : public;
+    init
+        currentFloor := 0;
+    event
+        open; 
+        close[nbFloors];
+        down;
+        up;
+    trans 
+        door.opened & currentFloor=0 |- close[0] -> ;
+        door.opened & currentFloor=1 |- close[1] -> ;
+        door.opened & currentFloor=2 |- close[2] -> ;
+        door.opened & currentFloor=3 |- close[3] -> ;
+        ~door.opened |- open -> ;
+        ~door.opened |- down -> currentFloor := currentFloor - 1;
+        ~door.opened |- up -> currentFloor := currentFloor + 1;
+    sync
+        <close[0], buttons[0].off , door.close>;
+        <close[1], buttons[1].off , door.close>;
+        <close[2], buttons[2].off , door.close>;
+        <close[3], buttons[3].off , door.close>;
+        <open, door.open>;
+edon
+
+node Floor
+    sub
+        button : Button;
+        door : Door;
+    event
+        close, open;
+    trans 
+        door.opened |- close -> ;
+        ~door.opened |- open -> ;
+    sync
+        <close, button.off, door.close>;
+        <open, door.open>;
+edon
+
+/* v0
+*
+*  Satisfies P1, P2, P3, P5, P6
+*  Does not satisfy P7
+*
+*/
+node Building
+    sub
+        floors : Floor[nbFloors];
+        lift : Lift;
+    flow 
+        request : bool[nbFloors] : private;
+        requestUp, requestDown : bool : private;
+    assert
+        request[0] = (floors[0].button.lit | lift.buttons[0].lit);
+        request[1] = (floors[1].button.lit | lift.buttons[1].lit);
+        request[2] = (floors[2].button.lit | lift.buttons[2].lit);
+        request[3] = (floors[3].button.lit | lift.buttons[3].lit);
+
+        requestUp = ((lift.currentFloor < 3 & request[3])     
+        | (lift.currentFloor < 2 & request[2])
+        | (lift.currentFloor < 1 & request[1]));    // Vérifier qu'un boutton est allumé plus haut
+
+        requestDown = ((lift.currentFloor > 2 & request[2])
+        | (lift.currentFloor > 1 & request[1])
+        | (lift.currentFloor > 0 & request[0]));    // Vérifier qu'un boutton est allumé plus bas
+    event 
+        open[nbFloors];
+        up;
+        down;
+    trans
+        lift.currentFloor=0 & request[0] |- open[0] -> ;
+        lift.currentFloor=1 & request[1] |- open[1] -> ;
+        lift.currentFloor=2 & request[2] |- open[2] -> ;
+        lift.currentFloor=3 & request[3] |- open[3] -> ;
+
+        requestUp |- up -> ; 
+
+        requestDown |- down -> ; 
+    sync
+        <floors[0].open, lift.open, open[0]>;
+        <floors[1].open, lift.open, open[1]>;
+        <floors[2].open, lift.open, open[2]>;
+        <floors[3].open, lift.open, open[3]>;
+        <floors[0].close, lift.close[0]>;
+        <floors[1].close, lift.close[1]>;
+        <floors[2].close, lift.close[2]>;
+        <floors[3].close, lift.close[3]>;
+        <down, lift.down>;
+        <up, lift.up>;
+edon

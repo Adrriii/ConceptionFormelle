@@ -1,4 +1,4 @@
-with BuildingV0 do
+with Building do
     // Propriétés universelles
     dead := any_s - src(any_t - self_epsilon);
     notResettable := any_s - coreach(initial, any_t);
@@ -68,41 +68,6 @@ with BuildingV0 do
               [request[3] & lift.currentFloor = 3] & src(label down | label up));
 
           // Vérifier graphiquement : Séléctionner Building, Graph : dot-trace(initial, any_t, notP7) Puis executer les instructions dans le simulateur
-done
-
-with BuildingV1 do
-    // V0 Conditions
-    dead := any_s - src(any_t - self_epsilon);
-    notResettable := any_s - coreach(initial, any_t);
-     A_ex := label floors[0].button.push;   // label : all transitions
-     B_ex := [floors[0].button.lit];        // [] : all configurations where the expression is true in the states
-     notP1_ex := (tgt(A_ex) - B_ex);        // tgt : configuration after a transition
-     notP1 := (tgt(label floors[0].button.push) - [floors[0].button.lit])|
-                (tgt(label floors[1].button.push) - [floors[1].button.lit])|
-                (tgt(label floors[2].button.push) - [floors[2].button.lit])|
-                (tgt(label floors[3].button.push) - [floors[3].button.lit])|
-              (tgt(label lift.buttons[0].push) - [lift.buttons[0].lit])|
-                (tgt(label lift.buttons[1].push) - [lift.buttons[1].lit])|
-                (tgt(label lift.buttons[2].push) - [lift.buttons[2].lit])|
-                (tgt(label lift.buttons[3].push) - [lift.buttons[3].lit]);
-     notP2 := (tgt(label floors[0].door.close) - [~lift.buttons[0].lit] - [~floors[0].button.lit])|
-                (tgt(label floors[1].door.close) - [~lift.buttons[1].lit] - [~floors[1].button.lit])|
-                (tgt(label floors[2].door.close) - [~lift.buttons[2].lit] - [~floors[2].button.lit])|
-                (tgt(label floors[3].door.close) - [~lift.buttons[3].lit] - [~floors[3].button.lit]);
-     notP3 := any_s & 
-            (([~(lift.currentFloor=0)] - [~floors[0].door.opened])|
-                ([~(lift.currentFloor=1)] - [~floors[1].door.opened])|
-                ([~(lift.currentFloor=2)] - [~floors[2].door.opened])|
-                ([~(lift.currentFloor=3)] - [~floors[3].door.opened]));
-     notP5 := (src(label floors[0].door.open) - [request[0]])|
-                (src(label floors[1].door.open) - [request[1]])|
-                (src(label floors[2].door.open) - [request[2]])|
-                (src(label floors[3].door.open) - [request[3]]);
-     notP6 := any_s & (src(label up) - src(label down) - [request[0] |request[1] |request[2] |request[3]]);
-     notP7 := any_s & ([request[0] & lift.currentFloor = 0] & src(label down | label up) |
-              [request[1] & lift.currentFloor = 1] & src(label down | label up) |
-              [request[2] & lift.currentFloor = 2] & src(label down | label up) |
-              [request[3] & lift.currentFloor = 3] & src(label down | label up));
 
     /* P8 : When there are several requests, the software must (if necessary) continue in the same direction than it's last move
      * P8 : if "moved in a direction" and "a request is in this direction" then "it must go in this direction again"
@@ -110,42 +75,4 @@ with BuildingV1 do
 
       notP8 := any_s & ((reach(tgt(label up), any_t - (label up | label down)) & src(label down) & src(label up)) | 
                 (reach(tgt(label down), any_t - (label up | label down)) & src(label down) & src(label up)));
-done
-
-with Building do
-    // V0 Conditions
-    dead := any_s - src(any_t - self_epsilon);
-    notResettable := any_s - coreach(initial, any_t);
-     A_ex := label floors[0].button.push;   // label : all transitions
-     B_ex := [floors[0].button.lit];        // [] : all configurations where the expression is true in the states
-     notP1_ex := (tgt(A_ex) - B_ex);        // tgt : configuration after a transition
-     notP1 := (tgt(label floors[0].button.push) - [floors[0].button.lit])|
-                (tgt(label floors[1].button.push) - [floors[1].button.lit])|
-                (tgt(label floors[2].button.push) - [floors[2].button.lit])|
-                (tgt(label floors[3].button.push) - [floors[3].button.lit])|
-              (tgt(label lift.buttons[0].push) - [lift.buttons[0].lit])|
-                (tgt(label lift.buttons[1].push) - [lift.buttons[1].lit])|
-                (tgt(label lift.buttons[2].push) - [lift.buttons[2].lit])|
-                (tgt(label lift.buttons[3].push) - [lift.buttons[3].lit]);
-     notP2 := (tgt(label floors[0].door.close) - [~lift.buttons[0].lit] - [~floors[0].button.lit])|
-                (tgt(label floors[1].door.close) - [~lift.buttons[1].lit] - [~floors[1].button.lit])|
-                (tgt(label floors[2].door.close) - [~lift.buttons[2].lit] - [~floors[2].button.lit])|
-                (tgt(label floors[3].door.close) - [~lift.buttons[3].lit] - [~floors[3].button.lit]);
-     notP3 := any_s & 
-            (([~(lift.currentFloor=0)] - [~floors[0].door.opened])|
-                ([~(lift.currentFloor=1)] - [~floors[1].door.opened])|
-                ([~(lift.currentFloor=2)] - [~floors[2].door.opened])|
-                ([~(lift.currentFloor=3)] - [~floors[3].door.opened]));
-     notP5 := (src(label floors[0].door.open) - [request[0]])|
-                (src(label floors[1].door.open) - [request[1]])|
-                (src(label floors[2].door.open) - [request[2]])|
-                (src(label floors[3].door.open) - [request[3]]);
-     notP6 := any_s & (src(label up) - src(label down) - [request[0] |request[1] |request[2] |request[3]]);
-     notP7 := any_s & ([request[0] & lift.currentFloor = 0] & src(label down | label up) |
-              [request[1] & lift.currentFloor = 1] & src(label down | label up) |
-              [request[2] & lift.currentFloor = 2] & src(label down | label up) |
-              [request[3] & lift.currentFloor = 3] & src(label down | label up));
-    // V1 Conditions
-     notP8 := any_s & ((reach(tgt(label up), any_t - (label up | label down)) & src(label down) & src(label up)) | 
-              (reach(tgt(label down), any_t - (label up | label down)) & src(label down) & src(label up)));
 done
